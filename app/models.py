@@ -18,3 +18,9 @@ class PostLike(models.Model):
                 fields=["user", "post"], name="unique_post_like"
             )
         ]
+
+
+class UserFollow(models.Model):
+    user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
+    follow = models.ManyToManyField(User, related_name='follow')
+    timestamp = models.DateTimeField(auto_now=True)

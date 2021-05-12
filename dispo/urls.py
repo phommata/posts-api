@@ -1,10 +1,18 @@
+from app import views
 from django.contrib import admin
 from django.urls import path
-from app import views
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('user/create/', views.create_user),
-    path('post/create/', views.create_post),
+    path('admin', admin.site.urls),
+    # 1
+    path('user/create', views.create_user),
+    path('post/create', views.create_post),
     # Add remaining endpoints here
+    # 2
+    path('users/top', views.get_top_users),
+    # 3
+    path('users/follow', views.follow_user),
+    # 4
+    path('users/feed/<int:pk>', views.user_feeds),
 ]
