@@ -2,7 +2,7 @@ from app.models import Post
 from app.serializers import PostSerializer, UserSerializer, UserFollowSerializer
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.db.models import Count, Q
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
