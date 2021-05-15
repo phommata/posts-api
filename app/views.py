@@ -1,5 +1,5 @@
-from app.models import Post
-from app.serializers import PostSerializer, UserSerializer, UserFollowSerializer
+from app.models import Post, UserFollow
+from app.serializers import PostSerializer, UserSerializer
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -14,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated
 # 1
 @api_view(["POST"])
 def create_user(request):
-    # pass
     data = JSONParser().parse(request)
     data['password'] = make_password(data['password'])
     serializer = UserSerializer(data=data)
@@ -54,16 +53,22 @@ def get_top_users(request):
 @api_view(["POST"])
 def follow_user(request):
     data = JSONParser().parse(request)
-    serializer = UserFollowSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse({"message": "User followed"}, status=status.HTTP_200_OK)
+    dataFollows = data['follows']
+    dataUser = data['user']
+    user = User.objects.get(id=dataUser)
+    if User.objects.filter(username=user.username).exists():
+        follows = User.objects.in_bulk(dataFollows)
+        for id in follows:
+            userProfile = User.objects.get(id=id)
+            userFollow, status = UserFollow.objects.get_or_create(user=userProfile)
+            userFollow.follow.add(user)
+        return JsonResponse({"message": "User(s) followed"})
     else:
         data = {
           "error": True,
-          "errors": serializer.errors,
+          "errors": 'User does not exist',
         }
-        return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(data)
 
 # 4
 @api_view(["GET"])
@@ -75,4 +80,4 @@ def user_feeds(request, pk=None):
         .order_by('-timestamp') \
         .values('id', 'body', 'user__username', 'likes')
     posts_list = list(posts)  # important: convert the QuerySet to a list object
-    return JsonResponse(posts_list, status=status.HTTP_200_OK, safe=False)
+    return JsonResponse(posts_list, safe=False)
