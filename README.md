@@ -1,4 +1,4 @@
-# Dispo
+# Posts CRUD API
 
 API that allows users to create and like posts, and follow other users. 
 
